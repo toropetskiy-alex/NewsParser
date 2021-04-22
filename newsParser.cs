@@ -37,12 +37,16 @@ namespace NewsParser
                     rssNews = reader.ReadToEnd();
                 }
             }
-            string pattern = "<link>(.*?)</link>"; 
-            MatchCollection matches = Regex.Matches(rssNews, pattern, RegexOptions.Compiled | RegexOptions.Singleline); // парсим ссылку на новость
-            MatchCollection match = Regex.Matches(rssNews, $"<!\\[CDATA\\[(.*?)]]>", RegexOptions.Compiled | RegexOptions.Singleline); //парсим новость
-
             
-            return ($"{match[0].Groups[1].Value}\n{matches[2].Groups[1].Value}").ToString();
+            MatchCollection matches = Regex.Matches(rssNews,"<link>(.*?)</link>", RegexOptions.Compiled | RegexOptions.Singleline); // парсим ссылку на новость
+            
+            MatchCollection match = Regex.Matches(rssNews, $"<!\\[CDATA\\[(.*?)]]>", RegexOptions.Compiled | RegexOptions.Singleline); //парсим новость
+            string pattern =  "\"(.+?)\""; //Нужно убрать <  и > из вывода пользователю 
+            string target ="$1";
+
+
+
+            return (Regex.Replace(match[0].Groups[1].Value.ToString(),pattern,target) + "\n" + matches[2].Groups[1].Value).ToString();
         }
 
         private static void sendNews()
