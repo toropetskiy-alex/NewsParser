@@ -11,8 +11,8 @@ namespace NewsParser
         {
             string inputHtml = "";
 
-            string htmlNews = "";
-            WebRequest request = WebRequest.Create("https://ria.ru/product_astrologiya/");
+            string rssNews = "";
+            WebRequest request = WebRequest.Create("https://lenta.ru/rss/");
 
             request.Proxy.Credentials = CredentialCache.DefaultCredentials;
             WebResponse response = request.GetResponse();
@@ -20,12 +20,17 @@ namespace NewsParser
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    htmlNews = reader.ReadToEnd();
+                    rssNews = reader.ReadToEnd();
                 }
             }
-            Regex regex = new Regex($"list-item__title.*?p>(.+?)<", RegexOptions.Compiled | RegexOptions.Singleline);
-            MatchCollection matches = regex.Matches(htmlNews);
-            Console.WriteLine(regex.IsMatch(htmlNews));
+            Regex regex = new Regex($"<title>.*?p>(.+?)</title>", RegexOptions.Compiled | RegexOptions.Singleline);
+            MatchCollection match = Regex.Matches(rssNews, $"<!\\[CDATA\\[(.*?)]]>", RegexOptions.Compiled | RegexOptions.Singleline) ;
+
+            for (int i = 0; i < match.Count; i++)
+            {
+                Console.WriteLine(match[i].Groups[1].Value +"\n");
+            }
+            
         }
 
          public void  getNews(string news)
